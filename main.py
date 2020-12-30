@@ -24,9 +24,15 @@ def yahoo_call_get_profile(ticker, YAHOO_FINANCE):
       'x-rapidapi-host': "apidojo-yahoo-finance-v1.p.rapidapi.com"
   }
 
-  json_data = requests.get(url, headers=headers, params=querystring).json()
+  data = requests.get(url, headers=headers, params=querystring)
 
-  return json_data if json.dumps(json_data) else -1
+  return json.loads(data.text) if json.loads(data.text) else -1
+
+def get_quote():
+    response = requests.get('https://zenquotes.io/api/random')
+    json_data = json.loads(response.text)
+    quote ='```' +  json_data[0]['q'] + " -" + json_data[0]['a'] +  '```'
+    return quote
   
 
 # Create Discord Object 
@@ -44,12 +50,17 @@ async def on_message(message):
     help =('```!prce [TICKER] -> Stock Price '
         +'\n!time -> Stock Market Hours and Current Time '
         +'\n!info [TICKER] -> Stock Company Name'
-        +'\n!trnd [TICEKR] -> Stock Trend ```')
+        +'\n!trnd [TICEKR] -> Stock Trend'
+        +'\n!quote -> Motivation ```')
     await message.channel.send(help)
+
+  if msg.startswith('!quote'):
+      quote = get_quote()
+      await message.channel.send(quote)
 
   if msg.startswith('!prce'):
     ticker_symbol = msg.split('!prce ', 1)[1]
-    json_config = yahoo_call_get_profile(ticker_symbol, YAHOO_FINANCE)
+    json_config = yahoo_call_get_profile(ticker_symbol.upper(), YAHOO_FINANCE)
     if json_config != -1:    
       stock_price = json_config['price']['regularMarketPrice']['raw']
       ath_day = json_config['price']['regularMarketDayHigh']['raw']
@@ -64,27 +75,27 @@ async def on_message(message):
   if msg.startswith('!time'):
     current_time = time.strftime("%H:%M:%S")
     stock_market_time = "09:30:00  to 16:00:00"
-    msg = ('Current Time: ' + current_time 
-        +'\nStock Market Time: ' + stock_market_time) 
+    msg = ('```Current Time: ' + current_time 
+        +'\nStock Market Time: ' + stock_market_time + '```') 
     await message.channel.send(msg)
 
   if msg.startswith('!info'):
     ticker_symbol = msg.split('!info ', 1)[1]
-    json_config = yahoo_call_get_profile(ticker_symbol, YAHOO_FINANCE)
+    json_config = yahoo_call_get_profile(ticker_symbol.upper, YAHOO_FINANCE)
     if json_config != -1:
       company_name = json_config['quoteType']['longName']
       company_sector = json_config['assetProfile']['sector']
       company_summary = json_config['assetProfile']['longBusinessSummary']
-      msg = ('**Company Name:**     ' + '*' + company_name + '*' 
-          +'\n**Company Sector:**   ' + '*' + company_sector + '*'
-          +'\n**Company Summary:**  ' + '*' + company_summary + '*')
+      msg = ('```\Company Name: ' + company_name  
+          +'\nCompany Sector: ' + company_sector 
+          +'\nCompany Summary: ' + company_summary + '```')
       await message.channel.send(msg)
     else:
       await message.channel.send("Stock Invalid! Check for errors!")
 
   if msg.startswith('!trnd'):
     ticker_symbol = msg.split('!trnd ', 1)[1]
-    json_config = yahoo_call_get_profile(ticker_symbol, YAHOO_FINANCE)
+    json_config = yahoo_call_get_profile(ticker_symbol.upper(), YAHOO_FINANCE)
     if json_config != -1:
       sTT = json_config['pageViews']['shortTermTrend']
       mTT = json_config['pageViews']['midTermTrend']
