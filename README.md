@@ -21,7 +21,7 @@ Add Bot to your server
 
 Link: https://bit.ly/3rFIMKe
 
-* You can only add bot to a server where you have Administrator privilages * 
+```* You can only add bot to a server where you have Administrator privilages ```
 
 
 Notes
