@@ -81,7 +81,7 @@ async def on_message(message):
 
   if msg.startswith('!info'):
     ticker_symbol = msg.split('!info ', 1)[1]
-    json_config = yahoo_call_get_profile(ticker_symbol.upper, YAHOO_FINANCE)
+    json_config = yahoo_call_get_profile(ticker_symbol.upper(), YAHOO_FINANCE)
     if json_config != -1:
       company_name = json_config['quoteType']['longName']
       company_sector = json_config['assetProfile']['sector']
