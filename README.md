@@ -5,6 +5,8 @@ StockBot is a bot functional in discord servers that can provide you with stock 
 Submitted by: Parth Patel
 
 Time spent: 1.5 hours spent in total
+
+
 User Stories
 
 The following required functionality is completed:
