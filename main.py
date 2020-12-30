@@ -1,6 +1,7 @@
 import os 
 import discord 
 import requests
+import time
 
 
 #API-KEYS
@@ -47,6 +48,13 @@ async def on_message(message):
     json_config = yahoo_call(ticker_symbol, YAHOO_FINANCE)
     stock_price = json_config['price']['regularMarketPrice']['raw']
     await message.channel.send("Stock Price: " + str(stock_price))
+
+  if msg.startswith('!time'):
+    current_time = time.strftime("%H:%M:%S")
+    stock_market_time = "09:30:00  to 16:00:00"
+    m = ('Current Time: ' + current_time 
+       + '\nStock Market Time: ' + stock_market_time) 
+    await message.channel.send(m)
     
 
 
