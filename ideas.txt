@@ -1,3 +1,0 @@
-* Stock Price
-* Company Name
-* Stock Market Hours
