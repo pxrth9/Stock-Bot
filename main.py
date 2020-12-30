@@ -2,6 +2,7 @@ import os
 import discord 
 import requests
 import time
+import json
 
 
 #API-KEYS
@@ -23,7 +24,9 @@ def yahoo_call(ticker, YAHOO_FINANCE):
       'x-rapidapi-host': "apidojo-yahoo-finance-v1.p.rapidapi.com"
   }
 
-  return requests.get(url, headers=headers, params=querystring).json()
+  json_data = requests.get(url, headers=headers, params=querystring).json()
+
+  return json_data if json.dumps(json_data) else -1
   
 
 # Create Discord Object 
@@ -39,15 +42,18 @@ async def on_message(message):
   msg = message.content
   if msg.startswith('!help'):
     help = ('`!price [TICKER] -> Current Stock Price` '
-        +'\n `!time -> Stock Market Hours and Current Time '
-        +'\n `!stock [TICKER] -> Stock Company Name')
-    await message.channel.send(message.channel, help)
+        +'\n`!time -> Stock Market Hours and Current Time `'
+        +'\n`!stock [TICKER] -> Stock Company Name`')
+    await message.channel.send(help)
 
   if msg.startswith('!price'):
     ticker_symbol = msg.split('!price ', 1)[1]
     json_config = yahoo_call(ticker_symbol, YAHOO_FINANCE)
-    stock_price = json_config['price']['regularMarketPrice']['raw']
-    await message.channel.send("Stock Price: " + str(stock_price))
+    if json_config != -1:    
+      stock_price = json_config['price']['regularMarketPrice']['raw']
+      await message.channel.send("Stock Price: " + str(stock_price))
+    else:
+      await message.channel.send("Stock Invalid! Please check for errors!")
 
   if msg.startswith('!time'):
     current_time = time.strftime("%H:%M:%S")
@@ -55,6 +61,10 @@ async def on_message(message):
     m = ('Current Time: ' + current_time 
        + '\nStock Market Time: ' + stock_market_time) 
     await message.channel.send(m)
+
+  if msg.startswith('!stock'):
+    ticker_symbol = msg.split('!stock ', 1)[1]
+
     
 
 
